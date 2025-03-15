@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ChatMessage from "@/components/chat/ChatMessage";
+import QueryVisualization from "@/components/chat/QueryVisualization";
 import { ArrowLeft, Send } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
@@ -38,10 +39,12 @@ export default function ChatRoom() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-    
+
     sendMessage(room.id, newMessage.trim());
     setNewMessage("");
   };
+
+  const latestMessage = roomMessages[roomMessages.length - 1];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -64,25 +67,36 @@ export default function ChatRoom() {
       </header>
 
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 container mx-auto px-4 py-6 gap-6">
-        <div className="space-y-4 order-2 lg:order-1">
+        {/* Left side: SQL Query and Visualization */}
+        <div className="space-y-4">
           <div className="sticky top-24">
-            <h2 className="text-lg font-semibold mb-4">Visualization</h2>
-            {roomMessages.length > 0 && roomMessages[roomMessages.length - 1].response?.data && (
+            <h2 className="text-lg font-semibold mb-4">Query Analysis</h2>
+            {latestMessage?.response && (
               <div className="border rounded-lg p-4 bg-card">
-                {roomMessages[roomMessages.length - 1].response?.sql_query && (
-                  <pre className="bg-muted p-4 rounded-md mb-4 overflow-x-auto text-sm">
-                    {roomMessages[roomMessages.length - 1].response.sql_query}
-                  </pre>
+                {latestMessage.response.sql_query && (
+                  <div className="mb-4">
+                    <h3 className="text-sm font-medium mb-2">SQL Query</h3>
+                    <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm">
+                      {latestMessage.response.sql_query}
+                    </pre>
+                  </div>
                 )}
-                <p className="mb-4 text-muted-foreground">
-                  {roomMessages[roomMessages.length - 1].response?.natural_language}
-                </p>
+                {latestMessage.response.data && (
+                  <div className="mt-6">
+                    <h3 className="text-sm font-medium mb-2">Visualization</h3>
+                    <QueryVisualization
+                      data={latestMessage.response.data}
+                      chartType={latestMessage.response.kind_of_chart || "bar"}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex flex-col h-[calc(100vh-8rem)] order-1 lg:order-2">
+        {/* Right side: Chat Messages */}
+        <div className="flex flex-col h-[calc(100vh-8rem)]">
           <ScrollArea ref={scrollAreaRef} className="flex-1 pr-4">
             <div className="space-y-4">
               {roomMessages.map((message) => (
