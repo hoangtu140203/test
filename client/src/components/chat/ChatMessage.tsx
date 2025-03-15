@@ -1,7 +1,6 @@
 import { ChatMessage as ChatMessageType } from "../../contexts/ChatContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
-import QueryVisualization from "./QueryVisualization";
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -11,9 +10,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
   const isAI = message.sender === "ai";
 
   return (
-    <div
-      className={`flex ${isAI ? "justify-start" : "justify-end"} mb-4`}
-    >
+    <div className={`flex ${isAI ? "justify-start" : "justify-end"} mb-4`}>
       <Card
         className={`max-w-[80%] ${
           isAI ? "bg-secondary" : "bg-primary text-primary-foreground"
@@ -28,22 +25,9 @@ export default function ChatMessage({ message }: ChatMessageProps) {
               {format(new Date(message.timestamp), "p")}
             </span>
           </div>
-          <p className="mb-2">{message.content}</p>
-          {message.response && (
-            <div className="mt-4">
-              {message.response.sql_query && (
-                <div className="bg-black/10 p-4 rounded-md mb-4 font-mono text-sm overflow-x-auto">
-                  {message.response.sql_query}
-                </div>
-              )}
-              <p className="mb-4">{message.response.natural_language}</p>
-              {message.response.data && (
-                <QueryVisualization
-                  data={message.response.data}
-                  chartType={message.response.kind_of_chart || "bar"}
-                />
-              )}
-            </div>
+          <p>{message.content}</p>
+          {isAI && message.response?.natural_language && (
+            <p className="mt-2 text-sm">{message.response.natural_language}</p>
           )}
         </CardContent>
       </Card>
