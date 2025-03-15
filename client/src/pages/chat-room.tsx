@@ -67,12 +67,14 @@ export default function ChatRoom() {
 
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 container mx-auto px-4 py-6 gap-6">
         {/* Left side: SQL Query and Visualization */}
-        <div className="space-y-6">
-          <div className="sticky top-24 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border shadow-sm">
-            <div className="p-6">
-              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                <Code className="h-5 w-5" /> Query Analysis
-              </h2>
+        <div className="flex flex-col h-[calc(100vh-8rem)]">
+          <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b pb-4">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <Code className="h-5 w-5" /> Query Analysis
+            </h2>
+          </div>
+          <ScrollArea className="flex-1">
+            <div className="py-4 space-y-6">
               {latestMessage?.response ? (
                 <div className="space-y-6">
                   {latestMessage.response.sql_query && (
@@ -122,7 +124,7 @@ export default function ChatRoom() {
                 </p>
               )}
             </div>
-          </div>
+          </ScrollArea>
         </div>
 
         {/* Right side: Chat Messages */}
