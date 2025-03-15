@@ -9,7 +9,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Card } from "@/components/ui/card";
 
 interface QueryVisualizationProps {
   data: {
@@ -20,29 +19,52 @@ interface QueryVisualizationProps {
 }
 
 export default function QueryVisualization({ data, chartType }: QueryVisualizationProps) {
-  // Transform data into format required by Recharts
   const chartData = data.labels.map((label, index) => ({
     name: label,
     value: data.values[index],
   }));
 
   const renderChart = () => {
+    const commonProps = {
+      data: chartData,
+      margin: { top: 10, right: 10, left: 10, bottom: 20 },
+    };
+
+    const commonAxisProps = {
+      tick: { fill: "hsl(var(--muted-foreground))", fontSize: 12 },
+      tickLine: { stroke: "hsl(var(--muted-foreground))" },
+    };
+
     switch (chartType) {
       case "line":
         return (
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
+          <LineChart {...commonProps}>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="hsl(var(--muted-foreground)/0.2)"
+            />
             <XAxis
               dataKey="name"
-              tick={{ fill: "hsl(var(--foreground))" }}
+              {...commonAxisProps}
+              height={40}
+              tickMargin={10}
             />
             <YAxis
-              tick={{ fill: "hsl(var(--foreground))" }}
+              {...commonAxisProps}
+              width={40}
+              tickMargin={10}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "hsl(var(--background))",
+                backgroundColor: "hsl(var(--card))",
                 border: "1px solid hsl(var(--border))",
+                borderRadius: "var(--radius)",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                padding: "8px 12px",
+              }}
+              itemStyle={{
+                color: "hsl(var(--foreground))",
+                fontSize: "12px",
               }}
             />
             <Line
@@ -50,26 +72,52 @@ export default function QueryVisualization({ data, chartType }: QueryVisualizati
               dataKey="value"
               stroke="hsl(var(--primary))"
               strokeWidth={2}
-              dot={{ fill: "hsl(var(--primary))" }}
+              dot={{
+                fill: "hsl(var(--background))",
+                stroke: "hsl(var(--primary))",
+                strokeWidth: 2,
+                r: 4,
+              }}
+              activeDot={{
+                fill: "hsl(var(--primary))",
+                stroke: "hsl(var(--background))",
+                strokeWidth: 2,
+                r: 6,
+              }}
             />
           </LineChart>
         );
       case "bar":
       default:
         return (
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
+          <BarChart {...commonProps}>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="hsl(var(--muted-foreground)/0.2)"
+            />
             <XAxis
               dataKey="name"
-              tick={{ fill: "hsl(var(--foreground))" }}
+              {...commonAxisProps}
+              height={40}
+              tickMargin={10}
             />
             <YAxis
-              tick={{ fill: "hsl(var(--foreground))" }}
+              {...commonAxisProps}
+              width={40}
+              tickMargin={10}
             />
             <Tooltip
+              cursor={{ fill: "hsl(var(--muted)/0.2)" }}
               contentStyle={{
-                backgroundColor: "hsl(var(--background))",
+                backgroundColor: "hsl(var(--card))",
                 border: "1px solid hsl(var(--border))",
+                borderRadius: "var(--radius)",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                padding: "8px 12px",
+              }}
+              itemStyle={{
+                color: "hsl(var(--foreground))",
+                fontSize: "12px",
               }}
             />
             <Bar
@@ -83,12 +131,12 @@ export default function QueryVisualization({ data, chartType }: QueryVisualizati
   };
 
   return (
-    <Card className="p-4">
+    <div className="bg-card border rounded-lg p-6 shadow-sm">
       <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           {renderChart()}
         </ResponsiveContainer>
       </div>
-    </Card>
+    </div>
   );
 }

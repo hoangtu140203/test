@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ChatMessage from "@/components/chat/ChatMessage";
 import QueryVisualization from "@/components/chat/QueryVisualization";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Code, LineChart } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 export default function ChatRoom() {
@@ -19,7 +19,6 @@ export default function ChatRoom() {
   const roomMessages = messages[id || ""] || [];
 
   useEffect(() => {
-    // Scroll to bottom when new messages arrive
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
@@ -68,30 +67,42 @@ export default function ChatRoom() {
 
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 container mx-auto px-4 py-6 gap-6">
         {/* Left side: SQL Query and Visualization */}
-        <div className="space-y-4">
-          <div className="sticky top-24">
-            <h2 className="text-lg font-semibold mb-4">Query Analysis</h2>
-            {latestMessage?.response && (
-              <div className="border rounded-lg p-4 bg-card">
-                {latestMessage.response.sql_query && (
-                  <div className="mb-4">
-                    <h3 className="text-sm font-medium mb-2">SQL Query</h3>
-                    <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm">
-                      {latestMessage.response.sql_query}
-                    </pre>
-                  </div>
-                )}
-                {latestMessage.response.data && (
-                  <div className="mt-6">
-                    <h3 className="text-sm font-medium mb-2">Visualization</h3>
-                    <QueryVisualization
-                      data={latestMessage.response.data}
-                      chartType={latestMessage.response.kind_of_chart || "bar"}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
+        <div className="space-y-6">
+          <div className="sticky top-24 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border shadow-sm">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                <Code className="h-5 w-5" /> Query Analysis
+              </h2>
+              {latestMessage?.response ? (
+                <div className="space-y-6">
+                  {latestMessage.response.sql_query && (
+                    <div>
+                      <h3 className="text-sm font-medium mb-3 text-muted-foreground uppercase tracking-wide">
+                        SQL Query
+                      </h3>
+                      <pre className="bg-primary/5 border rounded-lg p-4 overflow-x-auto text-sm font-mono text-primary">
+                        {latestMessage.response.sql_query}
+                      </pre>
+                    </div>
+                  )}
+                  {latestMessage.response.data && (
+                    <div>
+                      <h3 className="text-sm font-medium mb-3 text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                        <LineChart className="h-4 w-4" /> Visualization
+                      </h3>
+                      <QueryVisualization
+                        data={latestMessage.response.data}
+                        chartType={latestMessage.response.kind_of_chart || "bar"}
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-center py-8">
+                  Start a conversation to see query analysis and visualizations
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
