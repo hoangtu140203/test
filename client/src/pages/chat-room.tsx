@@ -80,8 +80,27 @@ export default function ChatRoom() {
                       <h3 className="text-sm font-medium mb-3 text-muted-foreground uppercase tracking-wide">
                         SQL Query
                       </h3>
-                      <pre className="bg-primary/5 border rounded-lg p-4 overflow-x-auto text-sm font-mono text-primary">
-                        {latestMessage.response.sql_query}
+                      <pre className="bg-primary/5 border rounded-lg p-4 overflow-x-auto text-sm font-mono">
+                        {latestMessage.response.sql_query.split(/\b(SELECT|FROM|WHERE|GROUP BY|ORDER BY|HAVING|JOIN|ON|AND|OR|AS|LIMIT|COUNT|SUM|AVG|MIN|MAX|BETWEEN|IN|LIKE|IS NULL|IS NOT NULL|DESC|ASC|DISTINCT|CASE|WHEN|THEN|END|INNER|LEFT|RIGHT|FULL|OUTER)\b/gi).map((part, index) => {
+                          const isKeyword = /^(SELECT|FROM|WHERE|GROUP BY|ORDER BY|HAVING|JOIN|ON|AND|OR|AS|LIMIT|COUNT|SUM|AVG|MIN|MAX|BETWEEN|IN|LIKE|IS NULL|IS NOT NULL|DESC|ASC|DISTINCT|CASE|WHEN|THEN|END|INNER|LEFT|RIGHT|FULL|OUTER)$/i.test(part);
+                          const isFunctionOrAggregate = /^(COUNT|SUM|AVG|MIN|MAX)$/i.test(part);
+
+                          if (isKeyword) {
+                            return (
+                              <span key={index} className="text-blue-600 dark:text-blue-400 font-semibold">
+                                {part.toUpperCase().startsWith("GROUP") || part.toUpperCase().startsWith("ORDER") ? "\n  " : "\n"}{part.toUpperCase()}{" "}
+                              </span>
+                            );
+                          } else if (isFunctionOrAggregate) {
+                            return (
+                              <span key={index} className="text-green-600 dark:text-green-400">
+                                {part.toUpperCase()}
+                              </span>
+                            );
+                          } else {
+                            return <span key={index}>{part}</span>;
+                          }
+                        })}
                       </pre>
                     </div>
                   )}
